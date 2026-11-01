@@ -1,0 +1,87 @@
+# Builds the Android app, then publishes them as a GitHub Release, which the website's
+# /download/android link points at (releases/latest). No Android Studio needed.
+# Repo secrets (Settings → Secrets and variables → Actions):
+#   VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, SITE_URL (e.g. https://dc-legacy.netlify.app)
+#   ANDROID_KEYSTORE_BASE64 (base64 of the upload keystore), ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+# Keep the same keystore forever: phones only accept an update signed with the key that signed the first install.
+name: Android release
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["app/**", ".github/workflows/android.yml"]
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency: { group: android-release, cancel-in-progress: true }
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: app } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm ci
+      - run: npm test
+      - name: Build web app
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SITE_URL: ${{ secrets.SITE_URL }}
+      - run: npx cap sync android
+      - name: Decode keystore
+        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/upload.jks"
+      - name: Build signed APK (direct download, updates itself)
+        working-directory: app/android
+        run: |
+          chmod +x gradlew
+          VERSION_CODE=$(( $(date +%s) / 60 ))
+          echo "VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
+          VERSION_NAME=$(node -p "require('../package.json').version")
+          ./gradlew assembleRelease \
+            -Pandroid.injected.version.code=$VERSION_CODE \
+            -Pandroid.injected.version.name=$VERSION_NAME \
+            -Pandroid.injected.signing.store.file="$RUNNER_TEMP/upload.jks" \
+            -Pandroid.injected.signing.store.password="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+            -Pandroid.injected.signing.key.alias="${{ secrets.ANDROID_KEY_ALIAS }}" \
+            -Pandroid.injected.signing.key.password="${{ secrets.ANDROID_KEY_PASSWORD }}"
+          mkdir -p "$RUNNER_TEMP/out"
+          cp app/build/outputs/apk/release/*.apk "$RUNNER_TEMP/out/dc-legacy.apk"
+      # Google Play forbids self-updating apps: rebuild the web part with VITE_STORE=play (updates open the
+      # Play Store) and remove the in-app updater and REQUEST_INSTALL_PACKAGES before building the bundle.
+      - name: Build web app for Google Play
+        run: npm run build && npx cap sync android && node scripts/play-strip.mjs
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SITE_URL: ${{ secrets.SITE_URL }}
+          VITE_STORE: play
+      - name: Build signed bundle (Google Play)
+        working-directory: app/android
+        run: |
+          VERSION_NAME=$(node -p "require('../package.json').version")
+          ./gradlew bundleRelease \
+            -Pandroid.injected.version.code=$VERSION_CODE \
+            -Pandroid.injected.version.name=$VERSION_NAME \
+            -Pandroid.injected.signing.store.file="$RUNNER_TEMP/upload.jks" \
+            -Pandroid.injected.signing.store.password="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+            -Pandroid.injected.signing.key.alias="${{ secrets.ANDROID_KEY_ALIAS }}" \
+            -Pandroid.injected.signing.key.password="${{ secrets.ANDROID_KEY_PASSWORD }}"
+          cp app/build/outputs/bundle/release/*.aab "$RUNNER_TEMP/out/dc-legacy.aab"
+          if unzip -p "$RUNNER_TEMP/out/dc-legacy.aab" base/manifest/AndroidManifest.xml | grep -a -q REQUEST_INSTALL_PACKAGES; then echo "Play bundle still asks to install packages"; exit 1; fi
+
+      - name: Publish release
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="app-v$VERSION-${{ github.run_number }}"
+          gh release create "$TAG" "$RUNNER_TEMP"/out/* --repo "${{ github.repository }}" --target "${{ github.sha }}" --latest \
+            --title "DC Legacy $VERSION (build ${{ github.run_number }})" \
+            --notes "Android app (dc-legacy.apk: install directly; dc-legacy.aab: for Google Play, without the in-app updater). Unofficial · not affiliated with Dhaka College."
