@@ -6,11 +6,7 @@
 # Keep the same keystore forever: phones only accept an update signed with the key that signed the first install.
 name: Android release
 on:
-  workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ["app/**", ".github/workflows/android.yml"]
-    tags: ["v*"]
+  workflow_dispatch:   # run by hand once the signing secrets above exist
 
 permissions:
   contents: write

@@ -196,7 +196,7 @@ export function install(ctx) {
     const p = S().profile || {}, name = c.name || p.name || "Dhaka College Student";
     return `<div class="idc-stage" id="idc-stage"><div class="idc${flip ? " flipped" : ""}" id="idc" tabindex="0" role="button" aria-label="Student pass for ${esc(name)}. Press to flip.">
       <div class="idc-face front">
-        <div class="idc-top"><span class="w">Dhaka College<i>diots</i></span><span class="idc-kind">Student Pass</span></div>
+        <div class="idc-top"><span class="w">DC<i>Legacy</i></span><span class="idc-kind">Student Pass</span></div>
         <div class="idc-body">
           <div class="idc-photo">${imgs.photo ? `<img src="${imgs.photo}" alt="">` : `<span>${esc(ctx.initials(name))}</span>`}</div>
           <div class="idc-info min0"><b class="idc-name">${esc(name)}</b><span class="idc-id num">${esc(c.id)}</span><span class="idc-dept">${esc([c.dept || p.department, "Dhaka College"].filter(Boolean).join(" · "))}</span>

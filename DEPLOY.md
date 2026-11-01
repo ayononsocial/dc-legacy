@@ -26,9 +26,13 @@ Needed for accounts, clubs, the study vault, events and the other shared feature
 5. In Supabase: **Authentication → URL Configuration** → set **Site URL** to your Netlify address and add it to the redirect URLs.
 
 ## 4. The Android app and the download button
-1. In `netlify.toml`, replace `YOUR-GITHUB-USERNAME` in the `/download/android` redirect with your GitHub username, commit. Netlify redeploys on its own.
-2. Build the APK: GitHub → **Actions → Android release → Run workflow** (needs the signing secrets listed in `store/RELEASE.md`), or open `app/android` in Android Studio. Upload the file as `dc-legacy.apk` to a GitHub **Release**. The website's Download button then points at it.
-3. Test the sync on a real phone: Menu → College portal → class roll and college password → Sync.
+Easy way, no Android Studio and no secrets needed:
+1. On GitHub open your repo → **Actions** tab → **Build APK** (left list) → **Run workflow** → green **Run workflow** button.
+2. Wait about 10 minutes until it shows a green tick. Your repo now has a **Release** (right side of the repo page) with `dc-legacy.apk`.
+3. The website's **Download for Android** button (`netlify.toml` points at `github.com/ayononsocial/dc-legacy/releases/latest/download/dc-legacy.apk`) now works. On your phone, download the file and open it. Allow "install unknown apps" for your browser when Android asks.
+4. Test the sync: Menu → College portal → class roll and college password → Sync.
+Optional: add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as repo secrets (Settings → Secrets and variables → Actions) so the app can sign in. Rerun **Build APK** after that.
+Google Play needs the signed "Android release" workflow instead (see `store/RELEASE.md`).
 
 ## Optional
 - Custom domain: **Domain management → Add a domain** in Netlify.

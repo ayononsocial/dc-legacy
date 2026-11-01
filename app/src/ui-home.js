@@ -24,8 +24,8 @@ export function install(ctx) {
     const courses = new Set(St.routine.map((r) => r.code)).size;
     const str = ctx.study.streak();
     const first = esc(ctx.firstName());
-    const TILES = [["routine", "calendar", "purple", "Routine", "View your classes"], ["planner", "listcheck", "green", "Planner", "Plan next semester"], ["grades", "bars", "blue", "CGPA", "Track your progress"], ["focus", "target", "pink", "Focus", "Study timer"],
-      ["map", "map", "purple", "Campus Map", "Find any room"], ["vault", "vault", "yellow", "Vault", "Notes, past papers"], ["rooms", "building", "blue", "Free Rooms", "Find empty classrooms"], ["fees", "wallet", "orange", "Fees", "Payments & installments"]];
+    const TILES = [["routine", "calendar", "purple", "Routine", "View your classes"], ["focus", "target", "pink", "Focus", "Study timer"],
+      ["vault", "vault", "yellow", "Vault", "Notes, past papers"], ];
     const prof = nc ? ctx.facName(nc.faculty) : "";
     const ncCard = nc ? `<a class="next-card" href="#/course?c=${encodeURIComponent(nc.code)}" aria-live="polite"><span class="fluid" aria-hidden="true"><i></i><i></i><i></i></span>
         <div class="top"><span class="row" style="gap:8px">${icon("school", "sm")} ${nc.live ? "Happening now" : "Next Class"} ${icon("chevR", "sm")}</span>${nc.live ? "" : `<span class="starts">Starts in</span>`}</div>
@@ -50,8 +50,8 @@ export function install(ctx) {
       <section class="hero-banner"><span class="fluid" aria-hidden="true"><i></i><i></i><i></i></span><span class="date">${now.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" })} ${icon("star", "sm")}</span>
         <h1><small>${ctx.greeting()},</small>${first}!</h1><p>Small steps. Big progress.</p></section>
       <div class="mt"><a class="ask-entry" href="#/ask"><span class="ask-orb sm" aria-hidden="true">${icon("sparkle")}</span><span class="grow"><b>Ask DC Legacy</b><span>“Where is my next class?” · “Remind me 30 min before”</span></span>${icon("arrow")}</a></div>
-      <div class="dtiles mt">${[["routine", "calendar", "purple", "Routine", "View your classes"], ["planner", "listcheck", "green", "Advising Planner", "Plan next semester"], ["map", "map", "blue", "Campus Map", "Rooms, routes & 3D walk"], ["grades", "bars", "purple", "CGPA", "Track your progress"],
-        ["tasks", "clipboard", "red", "Deadlines", "Assignments & exams"], ["fees", "wallet", "orange", "Fees", "Payments & installments"], ["vault", "vault", "blue", "Study Vault", "Notes, past papers"], ["rooms", "door", "purple", "Free Rooms", "Find empty classrooms"]]
+      <div class="dtiles mt">${[["routine", "calendar", "purple", "Routine", "View your classes"], 
+        ["tasks", "clipboard", "red", "Deadlines", "Assignments & exams"], ["vault", "vault", "blue", "Study Vault", "Notes, past papers"], ]
         .map(([id, ic, tone, t, d]) => `<a class="dtile" href="#/${id}"><span class="itile ${tone}">${icon(ic)}</span><div class="min0"><b>${t}</b><span>${d}</span></div></a>`).join("")}</div>
       <div class="split mt">
         <section class="card"><div class="card-h"><h2>Today's Schedule</h2><a class="see" href="#/routine">View All</a></div>${navStrip ? `<div style="margin:-4px 0 12px">${navStrip}</div>` : ""}
@@ -98,7 +98,7 @@ export function install(ctx) {
   function homeLite() {
     const now = new Date(), d = now.getDay(), nm = now.getHours() * 60 + now.getMinutes();
     const free = ctx.freeRoomsAt(d, nm, nm + 60).slice(0, 4);
-    const tiles = (S().role === "faculty" ? [["teach", "briefcase", "purple", "Teaching hub", "Consultations & announcements"], ["rooms", "building", "blue", "Free Rooms", "Find empty classrooms"], ["blog", "notes", "green", "Blog", "Share tips with students"], ["jobs", "briefcase", "orange", "Jobs & research", "Post an opening"]]
+    const tiles = (S().role === "faculty" ? [["teach", "briefcase", "purple", "Teaching hub", "Consultations & announcements"], ["blog", "notes", "green", "Blog", "Share tips with students"], ["jobs", "briefcase", "orange", "Jobs & research", "Post an opening"]]
       : [["alumhub", "cap", "purple", "Alumni hub", "Mentor students"], ["jobs", "briefcase", "blue", "Jobs & internships", "Post an opening"], ["blog", "notes", "green", "Blog", "Write your story"], ["alumni", "community", "orange", "Alumni", "Where graduates are now"]]);
     return `<section class="hero-banner"><h1><small>${ctx.greeting()},</small>${esc(ctx.firstName())}!</h1><p>${S().role === "faculty" ? "Rooms, notes and your faculty profile in one place." : "Stay connected with Dhaka College."}</p></section>
       <div class="mt"><a class="ask-entry" href="#/ask"><span class="ask-orb sm" aria-hidden="true">${icon("sparkle")}</span><span class="grow"><b>Ask DC Legacy</b><span>“Where is my next class?” · “Remind me 30 min before”</span></span>${icon("arrow")}</a></div>
@@ -132,11 +132,11 @@ export function install(ctx) {
     const rk = { faculty: "f", alumni: "a" }[role] || "s", p = S().profile || {};
     const GROUPS = [
       ["Teaching", [["teach", "briefcase", "purple", "Teaching hub", "Office hours, consultations", "f"]]], ["Alumni", [["alumhub", "cap", "green", "Alumni hub", "Mentoring and openings", "a"]]],
-      ["Academics", [["office", "clock", "teal", "Office hours", "Book a consultation", "s"], ["alarms", "bell", "pink", "Class Alarms", "Warn me before class", "s"], ["courses", "book", "teal", "My Courses", "Course hubs and notes", "s"], ["planner", "calcheck", "green", "Advising Planner", "Plan your next semester", "s"], ["marks", "notes", "blue", "Marks Estimator", "Predict your grades", "s"],
-        ["degree", "cap", "yellow", "Degree Progress", "Credits by requirement", "s"], ["insights", "chart", "purple", "Analytics", "CGPA trend and charts", "s"], ["scholarship", "trophy", "orange", "Scholarships", "What CGPA you need", "s"], ["exams", "exam", "orange", "Exam Planner", "Revision plan for exams", "s"], ["fees", "receipt", "red", "Fees & Deadlines", "Track payments and tasks", "s"], ["sync", "sync", "teal", "Sync Portal", "Import from the Dhaka College portal", "s"], ["classroom", "school", "green", "Google Classroom", "Materials and assignments", "s"]]],
+      ["Academics", [["office", "clock", "teal", "Office hours", "Book a consultation", "s"], ["alarms", "bell", "pink", "Class Alarms", "Warn me before class", "s"], ["courses", "book", "teal", "My Courses", "Course hubs and notes", "s"], ["marks", "notes", "blue", "Marks Estimator", "Predict your grades", "s"],
+        ["degree", "cap", "yellow", "Degree Progress", "Credits by requirement", "s"], ["exams", "exam", "orange", "Exam Planner", "Revision plan for exams", "s"], ["sync", "sync", "teal", "Sync Portal", "Import from the Dhaka College portal", "s"], ["classroom", "school", "green", "Google Classroom", "Materials and assignments", "s"]]],
       ["Study", [["focus", "target", "pink", "Focus Timer", "Pomodoro and analytics", "sf"], ["cards", "cards", "pink", "Flashcards", "Spaced repetition decks", "sf"], ["vault", "vault", "blue", "Study Vault", "Notes, past papers, slides", "sfa"], ["me", "award", "purple", "Achievements", "View your badges and stats", "sf"]]],
-      ["Campus", [["map", "map", "purple", "Campus Map", "Find rooms, walk in 3D", "sfa"], ["rooms", "building", "purple", "Free Rooms", "Find empty classrooms", "sfa"], ["idcard", "user", "teal", "My ID Card", "Your 3D student pass", "s"], ["faculty", "users", "purple", "Faculty & Reviews", "Contacts and ratings", "sfa"], ["cover", "file", "green", "Cover Page", "Assignment cover PDF", "sa"]]],
-      ["Community", [["notices", "megaphone", "orange", "Notice Board", "Official Dhaka College notices", "sfa"], ["news", "globe", "blue", "Campus News", "Stories from Dhaka College", "sfa"], ["club/home", "community", "purple", "DC Legacy Club", "Clubs, chats, events and merch", "sfa"], ["events", "calendar", "pink", "Events", "Workshops, concerts, clubs", "sfa"], ["calendar", "calcheck", "red", "Academic calendar", "Holidays, payments, finals", "sfa"], ["alumni", "community", "green", "Alumni", "Where graduates are now", "sfa"], ["blog", "notes", "purple", "Blog", "Tips and stories", "sfa"], ["jobs", "briefcase", "blue", "Jobs", "Jobs & internships", "sfa"], ["mentors", "heart", "pink", "Mentors", "Ask alumni for advice", "s"]]]
+      ["Campus", [["cover", "file", "green", "Cover Page", "Assignment cover PDF", "sa"]]],
+      ["Community", [["notices", "megaphone", "orange", "Notice Board", "Official Dhaka College notices", "sfa"], ["news", "globe", "blue", "Campus News", "Stories from Dhaka College", "sfa"], ["club/home", "community", "purple", "DC Legacy Club", "Clubs, chats, events and merch", "sfa"], ["events", "calendar", "pink", "Events", "Workshops, concerts, clubs", "sfa"], ["alumni", "community", "green", "Alumni", "Where graduates are now", "sfa"], ["blog", "notes", "purple", "Blog", "Tips and stories", "sfa"], ["jobs", "briefcase", "blue", "Jobs", "Jobs & internships", "sfa"], ["mentors", "heart", "pink", "Mentors", "Ask alumni for advice", "s"]]]
     ].map(([g, list]) => [g, list.filter((t) => t[5].includes(rk) && (!ctx.PAGE_FEATURE[t[0]] || ctx.content.feature(ctx.PAGE_FEATURE[t[0]])))]).filter(([, list]) => list.length);
     return `<a class="me-card" href="#/profile">${ctx.myAvatar("lg")}<span class="grow min0"><b class="ellipsis">${esc(p.name || "Set up your profile")}</b><span class="ellipsis">${esc([p.id, p.program || p.department].filter(Boolean).join(" · ") || ctx.roleLabel())}</span>
         <span class="me-sync ${ctx.C.user ? "on" : ""}">${icon(ctx.C.user ? "cloud" : "database", "sm")} ${ctx.C.user ? "Synced on all your devices" : "Saved on this device"}</span></span>${icon("chevR")}</a>
@@ -352,7 +352,7 @@ export function install(ctx) {
     busy(b, false);
   });
   pages.about = () => `${ctx.subHead("About DC Legacy", "", "#/more")}<div style="max-width:760px;margin:0 auto">
-    <section class="card" style="text-align:center"><div class="ob-word" style="padding:8px 0"><span class="w" style="font-size:38px">Dhaka College<i>diots</i></span><p>Your Uni Life, In One App</p><span class="unoff">Unofficial · not affiliated with Dhaka College</span></div>
+    <section class="card" style="text-align:center"><div class="ob-word" style="padding:8px 0"><span class="w" style="font-size:38px">DC<i>Legacy</i></span><p>Your Uni Life, In One App</p><span class="unoff">Unofficial · not affiliated with Dhaka College</span></div>
       <p class="small muted mt">Version ${ctx.APP_VERSION}. Made by Dhaka College students, for Dhaka College students. DC Legacy is not affiliated with, endorsed by or connected to Dhaka College. Always confirm important information on the official portal.</p>
       <div class="row center mt"><a class="btn sm" href="/privacy.html" target="_blank" rel="noopener">Privacy policy</a><a class="btn sm" href="/terms.html" target="_blank" rel="noopener">Terms</a></div></section>${devCard()}</div>`;
 
@@ -361,7 +361,7 @@ export function install(ctx) {
   const BRAND_FEATS = [["calendar", "Routine, alarms and next class"], ["bars", "CGPA, degree progress and advising"], ["megaphone", "Official notices and campus news"], ["community", "Alumni mentors, jobs and the blog"]];
   const obShell = (inner, { back = "", skip = "", foot = "" } = {}) => `<div class="auth">
     <aside class="auth-brand" aria-hidden="true"><div class="ab-glow"></div><div class="ab-grid"></div>
-      <div class="ab-inner"><div class="ab-logo"><img src="/logo-mark.png" alt="" width="52" height="52"><span class="word">Dhaka College<i>diots</i></span></div>
+      <div class="ab-inner"><div class="ab-logo"><img src="/logo-mark.png" alt="" width="52" height="52"><span class="word">DC<i>Legacy</i></span></div>
         <h2>Your whole Dhaka College life, <span>in one place.</span></h2><p>Made by Dhaka College students for students, teachers and alumni.</p>
         <ul class="ab-feats">${BRAND_FEATS.map(([ic, t]) => `<li><span>${icon(ic, "sm")}</span>${t}</li>`).join("")}</ul>
         <div class="ab-cards"><div class="ab-card abc1"><span class="ab-dot"></span><div><b>CSE207 · starts in 25 min</b><small>FUB-603 · 5th floor</small></div></div>
@@ -369,7 +369,7 @@ export function install(ctx) {
           <div class="ab-card abc3">${icon("bell", "sm")}<div><b>Alarm set</b><small>30 min before every class</small></div></div></div>
         <p class="ab-unoff">Unofficial · not affiliated with Dhaka College</p></div></aside>
     <main class="auth-main"><div class="auth-card">
-      <div class="auth-top">${back ? `<a class="icon-btn" href="${back}" aria-label="Back">${icon("chevL")}</a>` : "<span></span>"}<span class="auth-mlogo"><img src="/logo-mark.png" alt="" width="30" height="30"><span class="word">Dhaka College<i>diots</i></span></span>${skip ? `<button class="lnk" id="ob-skip">${skip}</button>` : "<span></span>"}</div>
+      <div class="auth-top">${back ? `<a class="icon-btn" href="${back}" aria-label="Back">${icon("chevL")}</a>` : "<span></span>"}<span class="auth-mlogo"><img src="/logo-mark.png" alt="" width="30" height="30"><span class="word">DC<i>Legacy</i></span></span>${skip ? `<button class="lnk" id="ob-skip">${skip}</button>` : "<span></span>"}</div>
       <div class="auth-body">${inner}</div>${foot ? `<div class="auth-foot">${foot}</div>` : ""}</div></main></div>`;
   pages.welcome = () => obShell(`<span class="eyebrow">Welcome</span><h1 class="auth-h">Let's get you set up</h1>
       <p class="muted">One account for the phone app and the web.</p>

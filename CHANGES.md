@@ -16,6 +16,10 @@
 - Hidden for now: CGPA and Analytics (built on the credit-based 4.00 scale; need a Dhaka College GPA design, e.g. from the transcript data).
 - Privacy policy and terms updated for the eShiksa sync (Chrome extension, Smart scan and email-domain text removed).
 
+## Download and brand fixes
+- "Build APK" GitHub Action (no secrets): builds a debug-signed `dc-legacy.apk` and publishes it as a Release; the website Download button points at it. "Android release" (signed, Play) is now manual only.
+- Fixed "Dhaka Collegediots" brand text everywhere (now DC Legacy). Home tiles for hidden pages removed. EWU campus banner replaced by a plain red banner with the crest.
+
 ## Developer card
 - About/More page now shows Samiul Ahmed Ayon, DC-25 batch, with the supplied photo (`app/public/img/dev-ayon.webp`). The old developer photos and GitHub/LinkedIn links are removed.
 

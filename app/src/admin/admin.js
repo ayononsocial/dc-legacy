@@ -114,7 +114,7 @@ async function start() {
   SECTIONS = ALL_SECTIONS.filter((s) => can(s[4]));
   tab = SECTIONS.some((s) => s[0] === location.hash.slice(1)) ? location.hash.slice(1) : "overview";
   const groups = [...new Set(SECTIONS.map((s) => s[3]))];
-  root.innerHTML = `<aside class="adm-side"><div class="adm-brand"><img class="adm-logo" src="/logo-mark.png" alt=""><div><b>Dhaka College<i>diots</i></b><span class="xs">Admin console</span></div></div>
+  root.innerHTML = `<aside class="adm-side"><div class="adm-brand"><img class="adm-logo" src="/logo-mark.png" alt=""><div><b>DC<i>Legacy</i></b><span class="xs">Admin console</span></div></div>
       <nav class="adm-nav">${groups.map((g) => `<p class="adm-group">${g}</p>${SECTIONS.filter((s) => s[3] === g).map(([id, l, ic]) => `<a href="#${id}" data-tab="${id}">${icon(ic)}<span class="grow">${l}</span><span class="badge-n" data-badge="${id}" hidden></span></a>`).join("")}`).join("")}</nav>
       <div class="adm-me"><span class="avatar sm">${esc(api.email.slice(0, 2).toUpperCase())}</span><div class="min0 grow"><b class="ellipsis" style="display:block">${esc(api.email)}</b><span class="xs">${api.kind === "demo" ? "Demo mode" : "Signed in"}</span></div><button class="icon-btn" id="adm-out" aria-label="Sign out">${icon("logout")}</button></div></aside>
     <div class="adm-scrim" id="adm-scrim"></div>

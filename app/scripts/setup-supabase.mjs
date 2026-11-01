@@ -56,7 +56,7 @@ await sql(ref, `insert into public.admin_invites (email, role) values ('${OWNER.
 const mail = (title, lead) => `<!doctype html><html><body style="margin:0;background:#f4f2fb;font-family:Inter,Segoe UI,Arial,sans-serif;color:#0f172a">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:28px 12px">
 <table role="presentation" width="100%" style="max-width:460px;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 10px 30px rgba(91,61,245,.12)">
-<tr><td style="background:linear-gradient(135deg,#d4524f,#8f1d1c);padding:26px 28px;color:#fff"><div style="font-size:26px;font-weight:900;letter-spacing:-.02em">Dhaka College<span style="color:#20bced">diots</span></div><div style="font-size:13px;opacity:.9;margin-top:4px">${title}</div></td></tr>
+<tr><td style="background:linear-gradient(135deg,#d4524f,#8f1d1c);padding:26px 28px;color:#fff"><div style="font-size:26px;font-weight:900;letter-spacing:-.02em">DC<span style="color:#20bced">Legacy</span></div><div style="font-size:13px;opacity:.9;margin-top:4px">${title}</div></td></tr>
 <tr><td style="padding:28px">
 <p style="margin:0 0 16px;font-size:15px;line-height:1.6">${lead}</p>
 <div style="font-size:36px;font-weight:800;letter-spacing:.35em;text-align:center;background:#fdf5f5;border:2px dashed #c4b5fd;border-radius:16px;padding:18px 0;color:#8f1d1c">{{ .Token }}</div>
