@@ -1,6 +1,6 @@
 # DC Legacy
 
-Student app for Dhaka College: students, clubs and alumni in one place. Built from the EWUdiots codebase
+Student app for Dhaka College: students, clubs and alumni in one place. Built from the codebase
 (Vite + vanilla JS, Capacitor for Android, Supabase backend, Vercel hosting).
 
 Status: rebrand, clean-up and a first eShiksa sync (profile, notices, receipts, exam list, transcript and routine PDFs) are in. The sync has not been tried against the real portal yet.
